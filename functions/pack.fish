@@ -5,6 +5,7 @@ function pack -d 'vim8/neovim package manager using git submodules'
     git -C $config_dir submodule add --name $package --depth 1 \
       https://github.com/$package.git pack/gitmodules/start/$repo[2]
       and git -C $config_dir config -f .gitmodules submodule.$package.shallow true
+      and git -C $config_dir config -f .gitmodules submodule.$package.ignore dirty
     # git -C $config_dir add .gitmodules
     # git -C $config_dir commit -m "Add $package package"
   end
