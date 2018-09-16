@@ -37,9 +37,10 @@ function pack -d 'vim8/neovim package manager using git submodules'
     # TODO: safe to assume it will be in config file?
     set -l path (git -C $config_dir config -f .gitmodules "submodule.$package.path")
     if git ls-files --error-unmatch $path ^/dev/null >/dev/null
-      git -C $config_dir submodule deinit $path
-      git -C $config_dir rm -rf $path
-      rm -rf "$config_dir/.git/modules/$package"; and echo $package
+      git -C $config_dir submodule deinit -f $path
+        and git -C $config_dir rm -rf $path
+        and rm -rf "$config_dir/.git/modules/$package"
+        and echo $package
     end
   end
    
