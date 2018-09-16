@@ -15,21 +15,26 @@ function pack -d 'vim8/neovim package manager using git submodules'
   end
  
   function __list -a config_dir -a is_verbose
-    set -l out (git -C $config_dir config -f .gitmodules --get-regexp 'submodule\..*.path')
-    set -l packages (string replace -ar 'submodule\.|\.path| pack/.*$' '' $out)
-    
-    for package_status in (git -C $config_dir submodule status)
+    set -l all_packages (string replace -ar 'submodule\.|\.path| pack/.*$' '' \
+      (git -C $config_dir config -f .gitmodules --get-regexp 'submodule\..*.path'))
+
+    set -l packages ""
+    set -l verbose_packages ""
+    for package_status in (git -C $config_dir submodule status ^/dev/null)
       set -l info (string split ' ' $package_status)
       # TODO: does this work in all cases?
       set -l name (string split '/' $info[3])[-1]
-      
-      set -l package (string match -r "\S+/$name\$" $packages)
-      
-      if test -z $is_verbose
-        echo $package
-      else
-        echo -se "$package\t$info"
-      end
+
+      set -l package (string match -r "\S+/$name\$" $all_packages)
+
+      set packages "$package\n$packages"
+      set verbose_packages "$package\t$info\n$verbose_packages"
+    end
+
+    if test -z $is_verbose
+      echo -ne $packages | sort
+    else
+      echo -ne $verbose_packages | sort | column -t
     end
   end
   
