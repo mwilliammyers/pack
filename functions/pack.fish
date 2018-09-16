@@ -11,7 +11,7 @@ function pack -d 'vim8/neovim package manager using git submodules'
   end
   
   function __update -a config_dir
-    git -C $config_dir submodule update --jobs 8 --remote --init --rebase
+    git -C $config_dir submodule update --jobs 0 --remote --init --checkout
   end
  
   function __list -a config_dir -a is_verbose
@@ -75,9 +75,7 @@ function pack -d 'vim8/neovim package manager using git submodules'
         __install $config_dir $package
       end
     case up update upgrade
-      for package in $argv[2..-1]
-        __update $config_dir $package
-      end
+      __update $config_dir $package
     case rm remove
       for package in $argv[2..-1]
         __remove $config_dir $package
