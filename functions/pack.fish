@@ -41,7 +41,7 @@ function pack -d 'vim8/neovim package manager using git submodules'
     # not sure how this would happen, but let's be safe...
     if string match --invert -r $safe_path_regex $path ^/dev/null >/dev/null
       git -C $config_dir submodule deinit $path
-      git -C $config_dir rm $path
+      git -C $config_dir rm -f $path
     end
     # TODO: remove this directory independent of git removal? 
     if string match --invert -r $safe_path_regex $package ^/dev/null >/dev/null
