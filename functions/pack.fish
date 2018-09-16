@@ -75,7 +75,7 @@ function pack -d 'vim8/neovim package manager using git submodules'
         __install $config_dir $package
       end
     case up update upgrade
-      __update $config_dir $package
+      __update $config_dir
     case rm remove
       for package in $argv[2..-1]
         __remove $config_dir $package
