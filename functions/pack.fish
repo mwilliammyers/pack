@@ -24,7 +24,7 @@ function pack -d 'vim8/neovim package manager using git submodules'
             # TODO: does this work in all cases?
             set -l name (string split '/' $info[3])[-1]
 
-            set -l package (string match -r "\S+/$name\$" $all_packages)
+            set -l package (string split ' ' (string match -e $name $all_packages))[1]
 
             set packages "$package\n$packages"
             set verbose_packages "$package\t$info\n$verbose_packages"
