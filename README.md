@@ -6,7 +6,7 @@ native vim8/neovim package manager using git submodules
 
 ## Install
 
-With [fisherman]
+With [fisher]
 
 ```
 fisher add mwilliammyers/pack
@@ -20,6 +20,4 @@ pack
 
 [travis-link]: https://travis-ci.org/mwilliammyers/pack
 [travis-badge]: https://img.shields.io/travis/mwilliammyers/pack.svg
-[slack-link]: https://fisherman-wharf.herokuapp.com
-[slack-badge]: https://fisherman-wharf.herokuapp.com/badge.svg
-[fisherman]: https://github.com/fisherman/fisherman
+[fisher]: https://github.com/jorgebucaran/fisher
