@@ -1,7 +1,6 @@
 # pack
 
 [![Build Status][travis-badge]][travis-link]
-[![Slack Room][slack-badge]][slack-link]
 
 native vim8/neovim package manager using git submodules
 
@@ -10,7 +9,7 @@ native vim8/neovim package manager using git submodules
 With [fisherman]
 
 ```
-fisher mwilliammyers/pack
+fisher add mwilliammyers/pack
 ```
 
 ## Usage
