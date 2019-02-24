@@ -1,19 +1,32 @@
 function pack -d 'vim8/neovim package manager using git submodules'
-    function __install -a config_dir package
+    function __install -a 'config_dir' 'package' 'post_install_do'
         set -l repo (string split -r '/' $package)
+        set -l package_dir pack/gitmodules/start/$repo[2]
 
-        git -C $config_dir submodule add --name $package --depth 1 https://github.com/$package.git pack/gitmodules/start/$repo[2]
+        git -C $config_dir submodule add \
+            --name $package \
+            --depth 1 https://github.com/$package.git \
+            $package_dir
         and git -C $config_dir config -f .gitmodules submodule.$package.shallow true
         and git -C $config_dir config -f .gitmodules submodule.$package.ignore dirty
+
+        pushd "$config_dir"/"$package_dir"
+        eval $post_install_do
+        popd
+
         # git -C $config_dir add .gitmodules
         # git -C $config_dir commit -m "Add $package package"
+
+        functions -e __install
     end
 
-    function __update -a config_dir
+    function __update -a 'config_dir'
         git -C $config_dir submodule update --jobs=0 --remote --depth=1 --init --checkout
+
+        functions -e __update
     end
 
-    function __list -a config_dir -a is_verbose
+    function __list -a 'config_dir' 'is_verbose'
         set -l all_packages (string replace -ar 'submodule\.|\.path| pack/.*$' '' \
           (git -C $config_dir config -f .gitmodules --get-regexp 'submodule\..*.path'))
 
@@ -35,9 +48,11 @@ function pack -d 'vim8/neovim package manager using git submodules'
         else
             echo -ne $verbose_packages | sort | column -t
         end
+
+        functions -e __list
     end
 
-    function __remove -a config_dir package
+    function __remove -a 'config_dir' 'package'
         # TODO: safe to assume it will be in config file?
         set -l path (git -C $config_dir config -f .gitmodules "submodule.$package.path")
         if git ls-files --error-unmatch $path ^/dev/null >/dev/null
@@ -46,6 +61,8 @@ function pack -d 'vim8/neovim package manager using git submodules'
             and rm -rf "$config_dir/.git/modules/$package"
             and echo $package
         end
+
+        functions -e __remove
     end
 
 
@@ -53,7 +70,7 @@ function pack -d 'vim8/neovim package manager using git submodules'
      pack remove [<name>...]
      pack list"
 
-    argparse --name='pack' 'h/help' 'v/verbose' -- $argv
+    argparse --name='pack' 'h/help' 'v/verbose' 'd/do=' -- $argv
 
     set -q _flag_help
     and echo $usage
@@ -73,7 +90,8 @@ function pack -d 'vim8/neovim package manager using git submodules'
     switch $argv[1]
         case i install a add
             for package in $argv[2..-1]
-                __install $config_dir $package
+                # TODO: $_flag_do per package instead of the same for every package
+                __install $config_dir $package $_flag_do
             end
         case up update upgrade
             __update $config_dir
