@@ -1,8 +1,8 @@
 function pack -d 'vim8/neovim package manager using git submodules'
-    function __install -a 'config_dir' 'package' 'post_install_do'
+    function __install -a 'config_dir' 'package' 'package_type' 'post_install_do'
         set -l repo (string split -r '/' $package)
-        set -l package_dir pack/gitmodules/start/$repo[2]
-
+        set -l package_dir pack/gitmodules/$package_type/$repo[2]
+        
         git -C $config_dir submodule add \
             --name $package \
             --depth 1 https://github.com/$package.git \
@@ -70,8 +70,8 @@ function pack -d 'vim8/neovim package manager using git submodules'
      pack remove [<name>...]
      pack list"
 
-    argparse --name='pack' 'h/help' 'v/verbose' 'd/do=' -- $argv
-
+    argparse --name='pack' 'h/help' 'v/verbose' 'd/do=' 'o/opt' -- $argv
+    
     set -q _flag_help
     and echo $usage
     and return 0
@@ -89,9 +89,12 @@ function pack -d 'vim8/neovim package manager using git submodules'
 
     switch $argv[1]
         case i install a add
+            set -l package_type "start"
+            set -q _flag_opt; and set -l package_type "opt"
+
             for package in $argv[2..-1]
                 # TODO: $_flag_do per package instead of the same for every package
-                __install $config_dir $package $_flag_do
+                __install $config_dir $package $package_type $_flag_do
             end
         case up update upgrade
             __update $config_dir
