@@ -55,10 +55,10 @@ function pack -d 'vim8/neovim package manager using git submodules'
     function __remove -a 'config_dir' 'package'
         # TODO: safe to assume it will be in config file?
         set -l path (git -C $config_dir config -f .gitmodules "submodule.$package.path")
-        if git ls-files --error-unmatch $path ^/dev/null >/dev/null
+        if git -C $config_dir ls-files --error-unmatch $path > /dev/null 2>&1
             git -C $config_dir submodule deinit -f $path
-            and git -C $config_dir rm -rf $path
             and rm -rf "$config_dir/.git/modules/$package"
+            and git -C $config_dir rm -rf $path
             and echo $package
         end
 
