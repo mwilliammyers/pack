@@ -12,7 +12,7 @@ function pack -d 'vim8/neovim package manager using git submodules'
         and git -C $config_dir config -f .gitmodules submodule.$package.ignore dirty
 
         pushd "$config_dir"/"$package_dir"
-        eval $post_install_do
+        and eval $post_install_do
         popd
 
         # git -C $config_dir add .gitmodules
