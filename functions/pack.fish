@@ -15,14 +15,10 @@ function pack -d 'vim8/neovim package manager using git submodules'
 
         # git -C $config_dir add .gitmodules
         # git -C $config_dir commit -m "Add $package package"
-
-        functions -e __install
     end
 
     function __update -a 'config_dir'
         git -C $config_dir submodule update --jobs=0 --remote --depth=1 --init --checkout
-
-        functions -e __update
     end
 
     function __list -a 'config_dir' 'is_verbose'
@@ -34,21 +30,18 @@ function pack -d 'vim8/neovim package manager using git submodules'
         
         git -C $config_dir config -f .gitmodules --get-regexp path \
             | string replace -ar $pattern ''
-         
-        functions -e __list
     end
 
     function __remove -a 'config_dir' 'package'
         # TODO: safe to assume it will be in config file?
         set -l path (git -C $config_dir config -f .gitmodules "submodule.$package.path")
-        if git -C $config_dir ls-files --error-unmatch $path > /dev/null 2>&1
+
+        if test -n "$path"; and git -C $config_dir ls-files --error-unmatch $path > /dev/null 2>&1
             git -C $config_dir submodule deinit -f $path
             and rm -rf "$config_dir/.git/modules/$package"
             and git -C $config_dir rm -rf $path
-            and echo $package
+            and echo ""
         end
-
-        functions -e __remove
     end
 
 
