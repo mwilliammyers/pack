@@ -61,9 +61,17 @@ function pack -d 'vim8/neovim package manager using git submodules'
     and echo $usage
     and return 1
 
-    # TODO: check for environment variable?
-    set -l config_dir (string split ',' (vim --cmd 'echo &rtp|q' 2>&1))[1]
-    if not test -d $config_dir
+    # TODO: check for environment variable instead?
+    # TODO: faster way to do this?
+    set -l config_dir
+    set -l cmd 'echo split(&rtp, ",")[0] | q' 
+    if command -sq nvim
+        set config_dir (nvim --headless --cmd "$cmd" 2>&1)
+    else if command -sq vim
+        set config_dir (vim -T dumb --not-a-term --cmd "$cmd" 2>&1)
+    end
+
+    if not test -d "$config_dir"
         echo (set_color red)ERROR(set_color normal) could not find vim configuration directory 1>&2
         return 1
     end
